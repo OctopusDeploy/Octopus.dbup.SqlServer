@@ -4,7 +4,8 @@ on:
   # Triggers the workflow on pull request events and merges/pushes to main
   push:
     branches:
-      - 'master'
+      - master
+      - main
 
   pull_request:
     branches:
@@ -18,16 +19,11 @@ on:
 env:
   OCTOVERSION_CurrentBranch: ${{ github.head_ref || github.ref }} # For pull_request events we override the /refs/pull/xx/merge branch to the PR's head branch
 
-jobs:
-  generate-build-number:
-    runs-on: ubuntu-latest
-    name: Create next build number
-
-    env:
-      VERSION: "1.1.$Env:GITHUB_RUN_NUMBER"
-      
+jobs: 
   build:
     runs-on: ubuntu-latest
+    env:
+      VERSION: "1.1.$Env:GITHUB_RUN_NUMBER"
     steps:
       - name: Add nightly suffix if nightly
         if: github.event_name == 'schedule'
