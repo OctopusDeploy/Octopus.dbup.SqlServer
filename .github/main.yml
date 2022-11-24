@@ -4,9 +4,11 @@ on:
   # Triggers the workflow on pull request events and merges/pushes to main
   push:
     branches:
-      - 'main'
+      - 'master'
+
   pull_request:
     types: [ opened, synchronize, reopened ]
+
   schedule:
     # Daily 5am australian/brisbane time
     - cron: '0 19 * * *'
@@ -25,7 +27,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
       - name: Set version number
         if: github.event_name == 'schedule'
         run: echo "::set-env name=VERSION::${{ env.VERSION }}-nightly"
