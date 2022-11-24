@@ -1,0 +1,56 @@
+name: Package and Push
+
+on:
+  # Triggers the workflow on pull request events and merges/pushes to main
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  schedule:
+    # Daily 5am australian/brisbane time
+    - cron: '0 19 * * *'
+
+env:
+  OCTOVERSION_CurrentBranch: ${{ github.head_ref || github.ref }} # For pull_request events we override the /refs/pull/xx/merge branch to the PR's head branch
+
+jobs:
+  generate-build-number:
+    runs-on: ubuntu-latest
+    name: Create next build number
+
+    env:
+      VERSION: "1.1.$Env:GITHUB_RUN_NUMBER"
+      
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Set version number
+        if: github.event_name == 'schedule'
+        run: echo "::set-env name=VERSION::${{ env.VERSION }}-nightly"
+
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # all
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      # GeneratePackageOnBuild is specified in the csproj, so this will produce a nupkg
+      - name: Pack
+        run: dotnet publish -c Release /p:Version=$($Env:VERSION_NUMBER))
+        
+      - name: Install Octopus CLI 🐙
+        uses: OctopusDeploy/install-octopus-cli-action@v1
+        with:
+          version: latest
+
+      - name: Push to Octopus 🐙
+        uses: OctopusDeploy/push-package-action@v1
+        with:
+          server: ${{ secrets.DEPLOY_URL }}
+          space: Core Platform
+          api_key: ${{ secrets.DEPLOY_API_KEY }}
+          packages: ./source/bin/Release/octopus.dbup.sqlserver.${{ env.VERSION }}.nupkg
