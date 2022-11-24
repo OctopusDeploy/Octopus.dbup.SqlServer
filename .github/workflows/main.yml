@@ -27,10 +27,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Set version number
+      - name: Add nightly suffix if nightly
         if: github.event_name == 'schedule'
         run: echo "::set-env name=VERSION::${{ env.VERSION }}-nightly"
-
+      
+      - name: Add branch suffix if branch
+        if: github.event_name == 'pull_request'
+        run: echo "::set-env name=VERSION::$(${{ env.VERSION }}-${{ github.head_ref || github.ref }} | | tr "/" "-")
 
       - uses: actions/checkout@v2
         with:
