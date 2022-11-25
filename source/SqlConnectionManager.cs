@@ -14,9 +14,11 @@ namespace DbUp.SqlServer
     /// </summary>
     public class SqlConnectionManager : DatabaseConnectionManager
     {
+
+
         /// <summary>
         /// Manages Sql Database Connections
-        /// </summary>
+        /// </summary>sdfsdfsdfs
         /// <param name="connectionString"></param>
         public SqlConnectionManager(string connectionString)
              : base(new DelegateConnectionFactory((log, dbManager) =>
