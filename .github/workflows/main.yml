@@ -24,7 +24,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true # to allow setting version env var
       VERSION: "1.1.${{ github.run_number }}"
       OCTOPUS_API_KEY: ${{ secrets.DEPLOY_API_KEY  }}
-      OCTOPUS_HOST: ${{ secrets.DEPLOY_URL }}
+      OCTOPUS_URL: ${{ secrets.DEPLOY_URL }}
       OCTOPUS_SPACE: "Core Platform"
       
     steps:
@@ -33,14 +33,14 @@ jobs:
         run: |
           version="${{ env.VERSION }}-nightly"
           echo "Current Version: ${version}"
-          echo "::set-env name=VERSION::${version}"
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
 
       - name: Add branch suffix if branch
         if: github.event_name == 'pull_request'
         run: |
           version=$(echo ${{ env.VERSION }}-${{ github.head_ref || github.ref }} | tr "/" "-")
           echo "Current Version: ${version}"
-          echo "::set-env name=VERSION::$version"
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v4
         with:
