@@ -23,8 +23,8 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true # to allow setting version env var
       VERSION: "1.1.${{ github.run_number }}"
-      OCTOPUS_API_KEY: ${{ secrets.DEPLOY_API_KEY  }}
-      OCTOPUS_URL: ${{ secrets.DEPLOY_URL }}
+      OCTOPUS_API_KEY: "${{ secrets.DEPLOY_API_KEY }}"
+      OCTOPUS_URL: "${{ secrets.DEPLOY_URL }}"
       OCTOPUS_SPACE: "Core Platform"
       
     steps:
