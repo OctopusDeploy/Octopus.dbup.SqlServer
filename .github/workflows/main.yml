@@ -23,8 +23,6 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true # to allow setting version env var
       VERSION: "1.1.${{ github.run_number }}"
-      OCTOPUS_API_KEY: "${{ secrets.DEPLOY_API_KEY }}"
-      OCTOPUS_URL: "${{ secrets.DEPLOY_URL }}"
       OCTOPUS_SPACE: "Core Platform"
       
     steps:
@@ -53,6 +51,13 @@ jobs:
       # GeneratePackageOnBuild is specified in the csproj, so this will produce a nupkg
       - name: Pack
         run: dotnet publish -c Release /p:Version=${{ env.VERSION }} ./source
+
+      - name: Login to Octopus Deploy 🐙
+        if: (! contains(github.ref, '/merge')) && (! contains(github.ref, '/dependabot/')) && (! contains(github.ref, 'prettybot/'))
+        uses: OctopusDeploy/login@v1
+        with: 
+          server: https://deploy.octopus.app
+          service_account_id: 2552cea7-8cee-454e-a56b-e20e373e9c1f
 
       - name: Push to Octopus 🐙
         if: (! contains(github.ref, '/merge')) && (! contains(github.ref, '/dependabot/')) && (! contains(github.ref, 'prettybot/'))
