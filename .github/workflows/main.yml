@@ -31,7 +31,7 @@ jobs:
       - name: Add nightly suffix if nightly
         if: github.event_name == 'schedule'
         run: |
-          version="${{ env.VERSION }}-nightly"
+          version="${{ env.VERSION }}-nightly-$(date +'%Y%m%d%H%M%S')"
           echo "Current Version: ${version}"
           echo "VERSION=${version}" >> "$GITHUB_ENV"
 
@@ -55,11 +55,13 @@ jobs:
         run: dotnet publish -c Release /p:Version=${{ env.VERSION }} ./source
 
       - name: Push to Octopus 🐙
+        if: (! contains(github.ref, '/merge')) && (! contains(github.ref, '/dependabot/')) && (! contains(github.ref, 'prettybot/'))
         uses: OctopusDeploy/push-package-action@v3
         with:
           packages: ./source/bin/Release/octopus.dbup.sqlserver.${{ env.VERSION }}.nupkg
 
       - name: Create a release in Octopus Deploy 🐙
+        if: (! contains(github.ref, '/merge')) && (! contains(github.ref, '/dependabot/')) && (! contains(github.ref, 'prettybot/'))
         uses: OctopusDeploy/create-release-action@v3
         with:
           project: "Octopus.Dbup.SqlServer"
