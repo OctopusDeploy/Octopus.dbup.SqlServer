@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # Required to obtain the ID token from GitHub Actions
-      contents: read # Required to check out code
+      contents: write # Read Required to check out code, Write to create Git Tags
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true # to allow setting version env var
       VERSION: "1.1.${{ github.run_number }}"
@@ -47,7 +47,7 @@ jobs:
         with:
           fetch-depth: 0 # all
           
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
